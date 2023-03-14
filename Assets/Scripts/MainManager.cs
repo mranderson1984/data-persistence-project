@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,13 +14,15 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+    public Text HightScoreText;
+
     private bool m_Started = false;
     private int m_Points;
+    private int m_HighScore;
     
     private bool m_GameOver = false;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +40,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        UpdateHighScoreText();
     }
 
     private void Update()
@@ -70,7 +75,25 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        UpdateHighScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
+    private void UpdateHighScore()
+    {
+        if (m_Points > m_HighScore)
+        {
+            m_HighScore = m_Points;
+            GameDataManager.instance.SaveHighScore(m_HighScore);
+            UpdateHighScoreText();
+        }
+    }
+
+    private void UpdateHighScoreText()
+    {
+            HightScoreText.text = $"Best Score : {GameDataManager.instance.HighScorerName} : {GameDataManager.instance.HighScore}";
+    }
+
+
 }
